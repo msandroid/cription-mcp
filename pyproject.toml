@@ -15,7 +15,8 @@ classifiers = ["Operating System :: MacOS", "Programming Language :: Python :: 3
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/msandroid/cription-plugins"
+Homepage = "https://github.com/msandroid/cription-mcp"
+Plugins = "https://github.com/msandroid/cription-plugins"
 
 [project.scripts]
 cription-mcp = "cription_mcp.server:main"

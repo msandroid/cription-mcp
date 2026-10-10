@@ -1,0 +1,8 @@
+.git
+.gitignore
+README.md
+pyproject.toml
+cription_mcp/__pycache__
+*.egg-info
+build
+dist

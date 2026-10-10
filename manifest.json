@@ -1,0 +1,72 @@
+{
+  "manifest_version": "0.3",
+  "name": "cription",
+  "display_name": "Cription",
+  "version": "0.1.0",
+  "description": "On-device transcription (Apple SpeechAnalyzer) and Cription notes. Nothing leaves your Mac.",
+  "long_description": "Transcribe local audio and video files with Apple's on-device SpeechAnalyzer (macOS 26+), and search or read the notes recorded with the Cription app. Requires the Xcode Command Line Tools (swiftc) for the first transcription.",
+  "author": {
+    "name": "Cription",
+    "url": "https://github.com/msandroid"
+  },
+  "homepage": "https://github.com/msandroid/cription-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/msandroid/cription-mcp"
+  },
+  "license": "MIT",
+  "keywords": [
+    "transcription",
+    "speech-to-text",
+    "meetings",
+    "on-device"
+  ],
+  "server": {
+    "type": "python",
+    "entry_point": "cription_mcp/server.py",
+    "mcp_config": {
+      "command": "python3",
+      "args": [
+        "${__dirname}/cription_mcp/server.py"
+      ]
+    }
+  },
+  "tools": [
+    {
+      "name": "transcribe_audio",
+      "description": "Transcribe a local audio or video file on-device."
+    },
+    {
+      "name": "speech_languages",
+      "description": "List supported and installed on-device speech locales."
+    },
+    {
+      "name": "list_notes",
+      "description": "List Cription notes."
+    },
+    {
+      "name": "search_notes",
+      "description": "Search Cription notes."
+    },
+    {
+      "name": "get_note",
+      "description": "Read one Cription note."
+    },
+    {
+      "name": "list_folders",
+      "description": "List Cription note folders."
+    },
+    {
+      "name": "cription_status",
+      "description": "Report what this Mac supports."
+    }
+  ],
+  "compatibility": {
+    "platforms": [
+      "darwin"
+    ],
+    "runtimes": {
+      "python": ">=3.9"
+    }
+  }
+}
