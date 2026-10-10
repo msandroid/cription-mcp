@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cription-mcp"
+version = "0.1.0"
+description = "On-device transcription (Apple SpeechAnalyzer) and Cription notes as an MCP server"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [{ name = "Cription" }]
+keywords = ["mcp", "transcription", "speech-to-text", "on-device", "claude", "codex"]
+classifiers = ["Operating System :: MacOS", "Programming Language :: Python :: 3"]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/msandroid/cription-plugins"
+
+[project.scripts]
+cription-mcp = "cription_mcp.server:main"
+
+[tool.setuptools]
+packages = ["cription_mcp"]
+
+[tool.setuptools.package-data]
+cription_mcp = ["cription_speech.swift"]
