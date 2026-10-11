@@ -173,6 +173,20 @@ def plist_paths():
     return paths
 
 
+def notes_dirs():
+    """Cription 1.x later keeps one JSON file per note in Application Support/Notes."""
+    env = os.environ.get("CRIPTION_NOTES_DIR")
+    if env:
+        return [os.path.expanduser(p) for p in env.split(":") if p]
+    home = os.path.expanduser("~")
+    dirs = [os.path.join(home, "Library/Containers/Cription/Data/Library/Application Support/Notes")]
+    if os.environ.get("CRIPTION_NOTES_INCLUDE_SIM") == "1":
+        dirs += glob.glob(os.path.join(
+            home, "Library/Developer/CoreSimulator/Devices/*/data/Containers/Data/Application/*/"
+                  "Library/Application Support/Notes"))
+    return dirs
+
+
 def source_label(path):
     if "CoreSimulator" in path:
         return "simulator:" + path.split("/Devices/")[1].split("/")[0][:8]
@@ -181,8 +195,22 @@ def source_label(path):
     return "mac-debug"
 
 
+def note_version(note):
+    modified = note.get("modifiedAt")
+    return modified if isinstance(modified, (int, float)) else note.get("timestamp", 0)
+
+
 def load_notes():
     notes = {}
+
+    def keep(item, path):
+        if not isinstance(item, dict) or "id" not in item:
+            return
+        item["_source"] = source_label(path)
+        prev = notes.get(item["id"])
+        if prev is None or note_version(item) >= note_version(prev):
+            notes[item["id"]] = item
+
     for path in plist_paths():
         try:
             with open(path, "rb") as f:
@@ -194,12 +222,14 @@ def load_notes():
         except Exception:
             continue
         for item in items:
-            if not isinstance(item, dict) or "id" not in item:
+            keep(item, path)
+    for directory in notes_dirs():
+        for path in glob.glob(os.path.join(directory, "*.json")):
+            try:
+                with open(path, "rb") as f:
+                    keep(json.load(f), path)
+            except Exception:
                 continue
-            item["_source"] = source_label(path)
-            prev = notes.get(item["id"])
-            if prev is None or item.get("timestamp", 0) >= prev.get("timestamp", 0):
-                notes[item["id"]] = item
     return sorted(notes.values(), key=lambda n: n.get("timestamp", 0), reverse=True)
 
 
@@ -364,6 +394,7 @@ def tool_list_folders(args):
 
 def tool_cription_status(args):
     notes_sources = [{"path": p, "exists": os.path.isfile(p)} for p in plist_paths()]
+    notes_sources += [{"path": d, "exists": os.path.isdir(d)} for d in notes_dirs()]
     status = {
         "version": VERSION,
         "macOS": platform.mac_ver()[0] or None,
