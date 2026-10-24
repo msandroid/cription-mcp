@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cription-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "On-device transcription (Apple SpeechAnalyzer) and Cription notes as an MCP server"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -20,6 +20,7 @@ Plugins = "https://github.com/msandroid/cription-plugins"
 
 [project.scripts]
 cription-mcp = "cription_mcp.server:main"
+cription-mcp-setup = "cription_mcp.setup:main"
 
 [tool.setuptools]
 packages = ["cription_mcp"]

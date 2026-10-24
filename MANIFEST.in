@@ -1,0 +1,4 @@
+include manifest.json
+include tests/*.py
+recursive-include docs *.md
+include CHANGELOG.md

@@ -2,8 +2,8 @@
   "manifest_version": "0.3",
   "name": "cription",
   "display_name": "Cription",
-  "version": "0.1.0",
-  "description": "On-device transcription (Apple SpeechAnalyzer) and Cription notes. Nothing leaves your Mac.",
+  "version": "0.2.0",
+  "description": "On-device transcription (Apple SpeechAnalyzer) and Cription notes. Audio is processed locally; tool results are returned to your AI client.",
   "long_description": "Transcribe local audio and video files with Apple's on-device SpeechAnalyzer (macOS 26+), and search or read the notes recorded with the Cription app. Requires the Xcode Command Line Tools (swiftc) for the first transcription.",
   "author": {
     "name": "Cription",
@@ -32,6 +32,10 @@
     }
   },
   "tools": [
+    {
+      "name": "read_transcript",
+      "description": "Read long generated transcripts in pages without local file access."
+    },
     {
       "name": "transcribe_audio",
       "description": "Transcribe a local audio or video file on-device."

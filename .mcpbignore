@@ -6,3 +6,4 @@ cription_mcp/__pycache__
 *.egg-info
 build
 dist
+tests
