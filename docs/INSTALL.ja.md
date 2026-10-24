@@ -1,6 +1,6 @@
 # Cription連携：日本語インストールガイド
 
-MCPサーバー v0.3.0／プラグイン v0.3.0。音声認識はMac上で処理します。返された文字起こし・ノート本文は接続先のAIサービスに渡ります。
+MCPサーバー v0.3.1／プラグイン v0.4.0。音声認識はMac上で処理します。返された文字起こし・ノート本文は接続先のAIサービスに渡ります。
 
 ## 1. 必要なもの
 
@@ -18,7 +18,7 @@ xcode-select --install
 ## 2. サーバーをインストール
 
 ```bash
-uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.3.0 cription-mcp
+uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.3.1 cription-mcp
 uv tool update-shell
 ```
 
@@ -48,7 +48,7 @@ claude mcp get cription
 
 ### Claude Desktop
 
-[cription-0.3.0.mcpbをダウンロード](https://github.com/msandroid/cription-mcp/releases/download/v0.3.0/cription-0.3.0.mcpb)してClaude Desktopで開くか、手順2のインストール後に実行します。
+[cription-0.3.1.mcpbをダウンロード](https://github.com/msandroid/cription-mcp/releases/download/v0.3.1/cription-0.3.1.mcpb)してClaude Desktopで開くか、手順2のインストール後に実行します。
 
 ```bash
 cription-mcp-setup install claude-desktop
@@ -66,7 +66,7 @@ codex mcp get cription
 議事録などのスキルも使う場合は追加します。
 
 ```bash
-codex plugin marketplace add msandroid/cription-plugins --ref v0.3.0
+codex plugin marketplace add msandroid/cription-plugins --ref v0.3.1
 codex plugin add cription@cription
 ```
 
@@ -85,6 +85,40 @@ Antigravityを再起動し、**Customizations → Installed → MCP Servers → 
 ### Cursorなど
 
 `cription-mcp-setup config claude-desktop`で、標準的な`mcpServers`設定を表示できます。`cription`の項目だけを`.cursor/mcp.json`などに追加してください。GUIから`uvx`を起動する方式の例は[英語README](../README.md#cursor-and-other-stdio-mcp-clients)にあります。
+
+## 3a. Cursor（プラグイン または MCP単独）
+
+### プラグイン：MCP + 3スキル
+
+```bash
+git clone --branch v0.4.0 --depth 1 https://github.com/msandroid/cription-plugins.git
+cd cription-plugins
+python3 scripts/install_cursor.py
+```
+
+`uv`が未導入なら先に`brew install uv`を実行します。スクリプトは`~/.cursor/plugins/local/cription`へCursor公式形式のプラグインをコピーし、MCP用`uvx`を絶対パスにします。文字起こし・議事録要約・ノート検索の3スキルを含みます。
+
+Cursorを再起動するか、コマンドパレットで **Developer: Reload Window** を実行し、**Customize → Plugins / Skills / MCPs**でCription・3スキル・8ツールを確認します。画面名はCursorのバージョンによって異なります。Enterpriseでローカルプラグインが禁止されている場合は管理者に相談してください。
+
+更新は新しいタグを取得して`python3 scripts/install_cursor.py --replace`を実行します。元のプラグインは`~/.cursor/plugins/backups`へ退避します。Marketplace審査・掲載はGitHub公開とは別です。現時点ではローカル導入を使ってください。
+
+### MCP単独
+
+手順2のインストール後に実行します。
+
+```bash
+cription-mcp-setup install cursor
+```
+
+`~/.cursor/mcp.json`へ絶対パスのPythonとサーバーを登録します。他のサーバーや設定は保持し、変更前のJSONをバックアップします。`cription-mcp-setup config cursor`で設定だけ表示できます。既存の異なるCription設定を更新するときは`--replace`を指定します。
+
+プラグインにはMCPも含まれるため、**プラグインとMCP単独を同時に登録しないでください**。既にMCP単独を登録した場合、プラグイン導入前に`~/.cursor/mcp.json`の`mcpServers.cription`だけ削除します。プロジェクトの`.cursor/mcp.json`にも同名サーバーがないか確認してください。
+
+Cursor Agentへ「Criptionのspeech_languagesを呼んでください」と依頼して試せます。文字起こしはMac上の実在する音声の絶対パスを指定します。ローカルサーバーを使うため、Macで動くCursorが対象です。音声認識はMac内ですが、ツールが返した文字起こし・ノート本文はCursorが選択したモデルへ渡ります。
+
+削除時はプラグインなら`~/.cursor/plugins/local/cription`だけを削除し、MCP単独ならJSONの`mcpServers.cription`だけを削除します。Cursorを再読み込みしてください。
+
+公式仕様：[Cursor plugins](https://prod.cursor.com/docs/plugins)、[Cursor MCP](https://prod.cursor.com/help/customization/mcp)。
 
 ## 4. ChatGPT
 
@@ -175,10 +209,10 @@ cription-local ollama --model qwen3:0.6b --tools transcribe_audio read_transcrip
 
 ## 更新と削除
 
-v0.3.0へ更新する場合：
+v0.3.1へ更新する場合：
 
 ```bash
-uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.3.0 cription-mcp
+uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.3.1 cription-mcp
 ```
 
 AIクライアントとTunnelを再起動してください。実行パスが変わった場合は、既存設定を確認して`install CLIENT --replace`で更新します。

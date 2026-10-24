@@ -14,6 +14,7 @@ import tempfile
 
 
 CLIENT_PATHS = {
+    "cursor": ".cursor/mcp.json",
     "antigravity": ".gemini/config/mcp_config.json",
     "antigravity-legacy": ".gemini/antigravity/mcp_config.json",
     "claude-desktop": "Library/Application Support/Claude/claude_desktop_config.json",

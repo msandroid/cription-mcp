@@ -29,7 +29,7 @@ import sys
 import tempfile
 import uuid
 
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 PROTOCOL_VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
 SERVER_INFO = {"name": "cription", "version": VERSION}
 APPLE_EPOCH = datetime.datetime(2001, 1, 1, tzinfo=datetime.timezone.utc)

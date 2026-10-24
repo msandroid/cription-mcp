@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.1 — 2026-10-24
+
+- Add Cursor MCP config/install commands using ~/.cursor/mcp.json, preserving unrelated settings with backups and idempotent installation.
+- Document native Cursor plugin and standalone MCP setup.
+
 ## v0.3.0 — 2026-10-24
 
 - Add `cription-local` for Ollama native tool calling and llama.cpp OpenAI-compatible tool calling, sharing all eight Cription tools. Loopback-only transport, disabled proxies/redirects, tool allowlist and bounded tool rounds.

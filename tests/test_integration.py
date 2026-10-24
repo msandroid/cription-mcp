@@ -84,6 +84,22 @@ class TranscriptTests(unittest.TestCase):
 
 
 class SetupTests(unittest.TestCase):
+    def test_cursor_install_preserves_other_servers_and_repeats_safely(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(Path, "home", return_value=Path(tmp)):
+            path = Path(tmp) / ".cursor/mcp.json"
+            path.parent.mkdir()
+            original = {"mcpServers": {"other": {"command": "existing"}}, "custom": True}
+            path.write_text(json.dumps(original))
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(setup.main(["install", "cursor"]), 0)
+                self.assertEqual(setup.main(["install", "cursor"]), 0)
+            result = json.loads(path.read_text())
+            self.assertEqual(result["mcpServers"]["other"], original["mcpServers"]["other"])
+            self.assertEqual(result["mcpServers"]["cription"], setup.server_config())
+            self.assertTrue(result["custom"])
+            self.assertEqual(len(list(path.parent.glob("*.bak"))), 1)
+
+
     def test_preserves_existing_settings_and_is_idempotent(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "config.json"
