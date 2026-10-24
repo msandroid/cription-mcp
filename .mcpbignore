@@ -7,3 +7,6 @@ cription_mcp/__pycache__
 build
 dist
 tests
+
+.venv/
+uv.lock

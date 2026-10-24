@@ -64,6 +64,10 @@ def tunnel_binary():
         if local.is_file() and os.access(local, os.X_OK):
             binary = str(local)
     if not binary:
+        managed = Path.home() / ".local/share/cription-mcp/tunnel-client-v0.0.18/tunnel-client-runtime-cloudflared"
+        if managed.is_file() and os.access(managed, os.X_OK):
+            binary = str(managed)
+    if not binary:
         raise ValueError("Install OpenAI tunnel-client from https://github.com/openai/tunnel-client/releases/latest")
     return binary
 
@@ -110,13 +114,23 @@ def main(argv=None):
         if name == "install":
             p.add_argument("--replace", action="store_true", help="Replace an existing Cription entry (JSON files are backed up)")
     p = sub.add_parser("chatgpt", help="Configure or run OpenAI Secure MCP Tunnel; no public listener")
-    p.add_argument("action", choices=["key", "init", "doctor", "run"])
+    p.add_argument("action", choices=["connect", "key", "init", "doctor", "run"])
     p.add_argument("--profile", default="cription")
     p.add_argument("--tunnel-id", help="Existing tunnel ID; also reads CONTROL_PLANE_TUNNEL_ID")
     p.add_argument("--key-file", help="Private (chmod 600) runtime key file; only its path is passed to tunnel-client")
+    p.add_argument("--no-browser", action="store_true", help="Print URLs without opening a browser")
+    p.add_argument("--wait", type=int, default=60, help="Wait up to this many seconds for managed runtime readiness")
     args = parser.parse_args(argv)
     try:
         if args.command == "chatgpt":
+            if args.action == "connect":
+                try:
+                    from .tunnel_setup import connect
+                except ImportError:
+                    raise ValueError("Run as an installed command or python -m cription_mcp.setup")
+                if not 0 <= args.wait <= 600:
+                    raise ValueError("--wait must be 0–600 seconds")
+                return connect(args)
             if args.action == "key":
                 try:
                     from .key_setup import serve
@@ -156,7 +170,7 @@ def main(argv=None):
         if backup:
             print("Backup: %s" % backup)
         return 0
-    except (ValueError, OSError) as error:
+    except (ValueError, OSError, subprocess.TimeoutExpired) as error:
         print("cription-mcp-setup: %s" % error, file=sys.stderr)
         return 1
 

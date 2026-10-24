@@ -1,6 +1,6 @@
 # Cription連携：日本語インストールガイド
 
-MCPサーバー v0.2.0／プラグイン v0.3.0。音声認識はMac上で処理します。返された文字起こし・ノート本文は接続先のAIサービスに渡ります。
+MCPサーバー v0.3.0／プラグイン v0.3.0。音声認識はMac上で処理します。返された文字起こし・ノート本文は接続先のAIサービスに渡ります。
 
 ## 1. 必要なもの
 
@@ -18,7 +18,7 @@ xcode-select --install
 ## 2. サーバーをインストール
 
 ```bash
-uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.2.0 cription-mcp
+uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.3.0 cription-mcp
 uv tool update-shell
 ```
 
@@ -48,7 +48,7 @@ claude mcp get cription
 
 ### Claude Desktop
 
-[cription-0.2.0.mcpbをダウンロード](https://github.com/msandroid/cription-mcp/releases/download/v0.2.0/cription-0.2.0.mcpb)してClaude Desktopで開くか、手順2のインストール後に実行します。
+[cription-0.3.0.mcpbをダウンロード](https://github.com/msandroid/cription-mcp/releases/download/v0.3.0/cription-0.3.0.mcpb)してClaude Desktopで開くか、手順2のインストール後に実行します。
 
 ```bash
 cription-mcp-setup install claude-desktop
@@ -90,32 +90,66 @@ Antigravityを再起動し、**Customizations → Installed → MCP Servers → 
 
 各ユーザーが**自分のMacに接続するTunnel**を作成します。このGitHub公開は、共有サーバーやChatGPTの公開ディレクトリへの掲載を意味しません。他のユーザーのTunnel ID・キーを流用しないでください。
 
-1. 手順2でサーバーをインストールします。
-2. [OpenAI公式tunnel-client](https://github.com/openai/tunnel-client/releases/latest)のMac向け配布を入手し、`tunnel-client help quickstart`が実行できる状態にします。Apple Siliconはdarwin-arm64、Intel Macはdarwin-amd64を選びます。
-3. [PlatformのTunnel設定](https://platform.openai.com/settings/organization/tunnels)でTunnelを作成し、使用するChatGPTワークスペースに関連付けます。作成にはTunnels Read・Manage、実行にはRead・Use権限が必要です。ChatGPTの契約・ワークスペース権限によって利用可否が変わります。
-4. ランタイムAPIキーを作成します。権限は**Tunnels Read・Useだけ**にします。管理者キーは使いません。有効期限も設定してください。
-5. 次のコマンドで表示される、このMacだけの入力画面にキーを入力します。
+インストール後、次の1コマンドで進めます。
 
 ```bash
-cription-mcp-setup chatgpt key
+cription-mcp-setup chatgpt connect
 ```
 
-キーは`~/.config/cription-mcp/runtime-key`に権限600で保存されます。キー本文はログに残しません。既存ファイルは上書きしません。保存先を変える場合は`--key-file /absolute/path/to/key`を指定します。
+- 公式tunnel-clientがなければ、macOS用v0.0.18をSHA-256照合して専用フォルダーにインストールします。
+- PlatformのTunnel設定を開き、作成したTunnel IDをターミナルで受け取ります。Tunnelを自分のChatGPTワークスペースへ関連付けてください。
+- キーが未保存ならPlatformと、このMacだけのキー入力フォームを開きます。**Tunnels Read・Useだけ**の期限付きキーを作成し、フォームに入力します。キーは`~/.config/cription-mcp/runtime-key`へ権限600で保存し、本文はログに残しません。
+- 管理対象のランタイムを起動し、最大60秒待ってreadyを確認します。コマンド終了後も動作します。
+- ChatGPTのPlugins画面を開き、登録に使うTunnel IDと設定値を表示します。
 
-6. `tunnel_YOUR_ID`を自分のIDに置き換えて実行します。
+最後にChatGPTで **Add → Add custom MCP server** を選び、名前をCription、接続をTunnel、自分のTunnel ID、認証をNo authenticationにします。表示される権限を確認して作成し、Connect → Try in chatを実行します。
+
+ログイン、Tunnelの作成とワークスペース関連付け、APIキー発行、ChatGPT側の登録と権限承認はアカウント側で行います。利用可否は契約・管理者設定に依存します。セットアップはこれらの画面を案内します。
+
+既存Tunnelなら入力を省けます。
 
 ```bash
-cription-mcp-setup chatgpt init --tunnel-id tunnel_YOUR_ID --key-file "$HOME/.config/cription-mcp/runtime-key"
-cription-mcp-setup chatgpt doctor --key-file "$HOME/.config/cription-mcp/runtime-key"
-cription-mcp-setup chatgpt run --key-file "$HOME/.config/cription-mcp/runtime-key"
+cription-mcp-setup chatgpt connect --tunnel-id tunnel_YOUR_ID
 ```
 
-`run`を停止するとChatGPTからの呼び出しも止まります。MacとTunnelを起動したままにしてください。既存プロファイルがある場合は別名の`--profile`を3コマンドすべてに指定します。起動を管理したい場合は、公式CLIの`runtimes connect`と`runtimes status`も利用できます。
+再実行時は同名の稼働中Tunnelを再利用します。別のTunnelを使う場合は`--profile another-name`を指定します。`--key-file /absolute/path/to/key`で保存先変更、`--no-browser`でブラウザー自動表示を無効化できます。Mac再起動後は同じconnectコマンドで再開してください。ログイン時の自動起動は設定しません。停止・状態確認のコマンドは実行結果に表示されます。
 
-7. ChatGPTで**Plugins → Add → Add custom MCP server**を開きます。名前を入力し、接続を**Tunnel**にして自分のIDを選びます。Cription自体の認証は**No authentication**です。Tunnel側ではキーとワークスペースの権限が使われます。
-8. リスク説明を確認して作成し、**Connect → Try in chat**を実行します。
+[OpenAI公式のTunnel手順](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)も参照してください。APIキーをチャットに貼る必要はありません。旧`key`・`init`・`doctor`・`run`も引き続き利用できます。
 
-[OpenAI公式のTunnel手順](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels)も参照してください。APIキーをチャットに貼り付ける必要はありません。
+## 4a. Ollama・llama.cpp（ローカルLLM）
+
+`cription-local`がモデルのtool callingとCriptionの8ツールを接続します。Pythonの追加依存は不要です。認識・モデル推論・ツール結果の受け渡しをMac内で行います。接続先はループバックIPのHTTPに限定し、HTTPプロキシとリダイレクトを使いません。Ollamaではクラウドモデルを選ばず、ダウンロード済みのローカルモデルを使ってください。
+
+### Ollama
+
+```bash
+brew install ollama
+ollama serve
+# 別のターミナル
+ollama pull qwen3:0.6b
+cription-local ollama --model qwen3:0.6b --prompt 'speech_languagesを呼んで対応言語を教えて'
+```
+
+### llama.cpp
+
+```bash
+brew install llama.cpp
+llama-server -m /absolute/path/to/tool-capable-model.gguf --jinja --host 127.0.0.1 --port 8080
+# 別のターミナル。modelはサーバーのモデル名・エイリアスに合わせます。
+cription-local llama-cpp --model local --prompt 'speech_languagesを呼んで対応言語を教えて'
+```
+
+モデルに合ったtool calling対応テンプレートが必要です。`--jinja`だけで動かない場合は配布元のテンプレート指定に従ってください。モデルの能力により、ツールを正しく選べない場合があります。Qwen3 0.6Bの実機検証では両エンジンからのツール呼び出しは成功しましたが、返された言語数の要約に誤りがありました。小型モデルの回答は原文・ツール結果と照合してください。
+
+音声の例：
+
+```bash
+cription-local ollama --model qwen3:0.6b --tools transcribe_audio read_transcript --prompt '/Users/yourname/Downloads/test.m4a をja-JPで文字起こしして要点を日本語でまとめて'
+```
+
+`--tools`でモデルが使えるツールを制限できます。省略時は全8ツールです。`--base-url http://127.0.0.1:PORT`でポート変更、`--max-rounds 8`で連続呼び出し回数、`--timeout 180`でモデルの応答待ち秒数を指定できます。長文は標準入力からも渡せます。モデル・音声・ノートのダウンロードや送信はセットアップで自動実行しません。
+
+公式仕様：[Ollama tool calling](https://docs.ollama.com/capabilities/tool-calling)、[llama.cpp server](https://github.com/ggml-org/llama.cpp/tree/master/tools/server)。
 
 ## 5. 最初の動作確認
 
@@ -141,10 +175,10 @@ cription-mcp-setup chatgpt run --key-file "$HOME/.config/cription-mcp/runtime-ke
 
 ## 更新と削除
 
-v0.2.0へ更新する場合：
+v0.3.0へ更新する場合：
 
 ```bash
-uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.2.0 cription-mcp
+uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.3.0 cription-mcp
 ```
 
 AIクライアントとTunnelを再起動してください。実行パスが変わった場合は、既存設定を確認して`install CLIENT --replace`で更新します。

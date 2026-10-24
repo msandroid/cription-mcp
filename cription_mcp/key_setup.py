@@ -26,7 +26,7 @@ def save_key(path, value):
         os.unlink(temporary)
 
 
-def serve(path, timeout=300):
+def serve(path, timeout=300, open_browser=False):
     destination = Path(path).expanduser().resolve()
     if destination.exists():
         raise ValueError("Key file already exists: %s" % destination)
@@ -84,6 +84,9 @@ def serve(path, timeout=300):
     with HTTPServer(("127.0.0.1", 0), Handler) as http:
         http.timeout = 1
         print("Open locally: http://127.0.0.1:%s%s" % (http.server_port, token_path), flush=True)
+        if open_browser:
+            import webbrowser
+            webbrowser.open("http://127.0.0.1:%s%s" % (http.server_port, token_path))
         deadline = time.monotonic() + timeout
         while not saved and time.monotonic() < deadline:
             http.handle_request()

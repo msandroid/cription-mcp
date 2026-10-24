@@ -2,7 +2,7 @@
 
 On-device audio/video transcription and read-only access to your Cription notes, for **Claude, Codex, Antigravity, ChatGPT and other MCP clients**.
 
-**Current release: [v0.2.0](https://github.com/msandroid/cription-mcp/releases/tag/v0.2.0).** [日本語のインストール手順](docs/INSTALL.ja.md) · [Plugins and skills](https://github.com/msandroid/cription-plugins)
+**Current release: [v0.3.0](https://github.com/msandroid/cription-mcp/releases/tag/v0.3.0).** [日本語のインストール手順](docs/INSTALL.ja.md) · [Plugins and skills](https://github.com/msandroid/cription-plugins)
 
 Audio recognition runs on your Mac using Apple SpeechAnalyzer. Returned transcripts and notes are shared with your AI client and are subject to that service's data policies. The server has no Python runtime dependencies.
 
@@ -16,7 +16,7 @@ Audio recognition runs on your Mac using Apple SpeechAnalyzer. Returned transcri
 ## Install the server once
 
 ```bash
-uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.2.0 cription-mcp
+uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.3.0 cription-mcp
 uv tool update-shell
 ```
 
@@ -42,7 +42,7 @@ claude mcp get cription
 
 ### Claude Desktop
 
-Download **[cription-0.2.0.mcpb](https://github.com/msandroid/cription-mcp/releases/download/v0.2.0/cription-0.2.0.mcpb)** and open it in Claude Desktop. Python and the Command Line Tools are still required.
+Download **[cription-0.3.0.mcpb](https://github.com/msandroid/cription-mcp/releases/download/v0.3.0/cription-0.3.0.mcpb)** and open it in Claude Desktop. Python and the Command Line Tools are still required.
 
 Alternatively, after installing the server with uv:
 
@@ -89,7 +89,7 @@ For an on-demand Git install, use this entry instead. Replace `uvx` with the abs
   "mcpServers": {
     "cription": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/msandroid/cription-mcp@v0.2.0", "cription-mcp"]
+      "args": ["--from", "git+https://github.com/msandroid/cription-mcp@v0.3.0", "cription-mcp"]
     }
   }
 }
@@ -99,30 +99,17 @@ For an on-demand Git install, use this entry instead. Replace `uvx` with the abs
 
 Each user runs their **own** Cription server and OpenAI Tunnel on their Mac. The repository does not provide a shared hosted server, shared API key, or access to another user's Mac. This GitHub release is not a ChatGPT public-directory listing.
 
-1. Install the Cription server as above and the official [OpenAI tunnel-client](https://github.com/openai/tunnel-client/releases/latest). See the [official Tunnel guide](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels).
-2. Create or reuse a tunnel in [Platform tunnel settings](https://platform.openai.com/settings/organization/tunnels) and associate it with your ChatGPT workspace. Creating a tunnel needs **Tunnels Read + Manage**. Connecting it needs the applicable ChatGPT workspace permissions.
-3. Create a **runtime key** with **Tunnels Read + Use**. Do not use an admin key. Save it without terminal echo using the one-time local form:
+After installing Cription, run:
 
 ```bash
-cription-mcp-setup chatgpt key
+cription-mcp-setup chatgpt connect
 ```
 
-Open the printed loopback URL on the same Mac and enter the runtime key. The form closes after saving it to `~/.config/cription-mcp/runtime-key` with mode 600. Existing key files are never overwritten. The key is not written to logs or this repository. To choose another destination, use `--key-file /absolute/path/to/key`.
+This installs official tunnel-client v0.0.18 when missing (pinned SHA-256), opens Platform for Tunnel creation/workspace association, receives the Tunnel ID, opens a local password form for a Read + Use runtime key, starts the managed runtime, and checks readiness. The key is saved with mode 600. Existing running aliases are reused without changes. Use `--tunnel-id tunnel_YOUR_ID` to skip ID input, `--key-file /absolute/path/to/key` for an existing private key, and `--no-browser` to print instructions without opening pages. Run again after reboot; login-time autostart is not installed.
 
-4. Configure and validate your tunnel. Replace `tunnel_YOUR_ID` with your own ID:
+Account login, Tunnel creation/workspace association, key issuance and ChatGPT registration/consent remain account-side actions. In **ChatGPT Plugins → Add → Add custom MCP server**, choose Tunnel, your displayed ID, and No authentication for Cription, then review permissions and connect. The Tunnel itself authenticates with your runtime key. Keep the Mac awake and renew expiring keys. See the [official Tunnel guide](https://developers.openai.com/api/docs/guides/secure-mcp-tunnels).
 
-```bash
-cription-mcp-setup chatgpt init --tunnel-id tunnel_YOUR_ID --key-file "$HOME/.config/cription-mcp/runtime-key"
-cription-mcp-setup chatgpt doctor --key-file "$HOME/.config/cription-mcp/runtime-key"
-cription-mcp-setup chatgpt run --key-file "$HOME/.config/cription-mcp/runtime-key"
-```
-
-Keep the foreground process running for discovery and every tool call. The MCP server does not listen on a public port. If you prefer environment-based secrets, set `CONTROL_PLANE_API_KEY` locally and omit `--key-file` from **all three commands**, including `init`. Choose a separate profile with `--profile` if one already exists; `init` does not silently replace profiles.
-
-For a managed local runtime, the official CLI also supports `tunnel-client runtimes connect`; consult `tunnel-client help quickstart` and verify `runtimes status` before relying on it. Keep the runtime key valid and renew it before its expiration.
-
-5. In ChatGPT **Plugins → Add → Add custom MCP server**, enter a name, choose **Tunnel**, select your tunnel ID, and choose **No authentication** for the local Cription MCP server. The Tunnel itself uses your runtime key and workspace permissions. Review the warning, create the private plugin and connect it.
-6. Choose **Try in chat**, then ask it to call `speech_languages`. Test transcription using an **absolute path on your Mac**, such as `/Users/yourname/Downloads/meeting.m4a`. Uploading a browser attachment does not automatically put that file on the Mac.
+Try `speech_languages`, then transcription with an absolute path on your Mac. Browser attachments are not automatically local files. The earlier `key`, `init`, `doctor` and foreground `run` commands remain available.
 
 For long transcripts, call `read_transcript` with the returned `transcriptId` and `nextOffset` until `nextOffset` is null. ChatGPT can summarize the returned text using a normal prompt; the local plugin skill files are for Claude, Codex and Antigravity.
 
@@ -152,7 +139,7 @@ A successful connection advertises **8 tools**. `speech_languages` may take long
 See [日本語ガイド](docs/INSTALL.ja.md#更新と削除) for all client paths and cleanup steps. To update the persistent install to this release:
 
 ```bash
-uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.2.0 cription-mcp
+uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.3.0 cription-mcp
 ```
 
 Restart your AI clients and Tunnel after upgrading. The setup command backs up JSON settings and preserves unrelated entries. To replace an existing Cription registration intentionally, use `install CLIENT --replace`.
@@ -170,7 +157,7 @@ python3 -m unittest discover -s tests -v
 uv run --no-project --with mcp --python 3.12 tests/smoke_mcp.py --audio /path/to/test.aiff
 uv run --no-project --with mcp --python 3.12 tests/smoke_mcp.py --audio /path/to/test.aiff --tunnel-client /path/to/tunnel-client
 uv build
-npx -y @anthropic-ai/mcpb pack . dist/cription-0.2.0.mcpb
+npx -y @anthropic-ai/mcpb pack . dist/cription-0.3.0.mcpb
 ```
 
 Smoke tests use synthetic notes. The local Tunnel test does not by itself prove a live ChatGPT conversation. On the release-validation Mac, ChatGPT and Codex completed real tool calls; Claude and Antigravity completed connection/discovery checks, with their model calls limited by account quotas. Keep versions synchronized across `pyproject.toml`, `manifest.json` and `server.py`.
@@ -178,3 +165,9 @@ Smoke tests use synthetic notes. The local Tunnel test does not by itself prove 
 ## License
 
 MIT
+
+## Local models: Ollama and llama.cpp
+
+Use `cription-local ollama --model qwen3:0.6b --prompt "Call speech_languages"` with a running Ollama server, or `cription-local llama-cpp --model local --prompt "Call speech_languages"` with a tool-capable `llama-server --jinja` on port 8080. The bridge executes Cription tools and returns their results to the local model. It accepts loopback HTTP IP addresses only, bypasses proxies and rejects redirects. Select a local Ollama model, not a cloud model. Use `--tools` to restrict access. See the [Japanese setup guide](docs/INSTALL.ja.md#4a-ollamallamacppローカルllm) for full commands.
+
+ChatGPT guided setup: `cription-mcp-setup chatgpt connect` installs a verified official tunnel-client when needed, opens the setup/key pages, starts a managed runtime and verifies readiness. Account login, workspace association, key creation and ChatGPT consent still require account-side actions.

@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.3.0 — 2026-10-24
+
+- Add `cription-local` for Ollama native tool calling and llama.cpp OpenAI-compatible tool calling, sharing all eight Cription tools. Loopback-only transport, disabled proxies/redirects, tool allowlist and bounded tool rounds.
+- Add guided `chatgpt connect`: checksum-verified official CLI installation, browser-assisted key storage, managed runtime connection/readiness and safe reuse of existing running aliases.
+- Document local model setup and the remaining account-side ChatGPT steps.
+
 ## v0.2.0 — 2026-10-24
 
 - Add persistent-install setup commands for Claude Code, Claude Desktop, Codex and Antigravity, preserving unrelated client configuration and creating backups.
