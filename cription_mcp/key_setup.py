@@ -9,9 +9,10 @@ import time
 from urllib.parse import parse_qs
 
 
-def save_key(path, value):
-    if not isinstance(value, str) or not value.startswith("sk-") or len(value) < 20 or any(c.isspace() for c in value):
-        raise ValueError("Enter an OpenAI runtime API key, without whitespace")
+def save_key(path, value, kind="openai"):
+    prefixes = ("ntn_", "secret_") if kind == "notion" else ("sk-",)
+    if not isinstance(value, str) or not value.startswith(prefixes) or len(value) < 20 or any(c.isspace() for c in value):
+        raise ValueError("Enter a valid %s API key, without whitespace" % kind)
     path = Path(path).expanduser().resolve()
     if path.exists():
         raise ValueError("Key file already exists; choose another --key-file to avoid replacing it")
@@ -26,12 +27,14 @@ def save_key(path, value):
         os.unlink(temporary)
 
 
-def serve(path, timeout=300, open_browser=False):
+def serve(path, timeout=300, open_browser=False, kind="openai"):
     destination = Path(path).expanduser().resolve()
     if destination.exists():
         raise ValueError("Key file already exists: %s" % destination)
     token_path = "/" + secrets.token_urlsafe(32)
     saved = False
+    label = "Notion API key" if kind == "notion" else "Runtime key"
+    purpose = "NotionでCription専用コネクションを作成し、そのAPIトークンを入力してください。" if kind == "notion" else "TunnelのRead・Use権限だけを持つランタイムキーを入力してください。"
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_args):
@@ -57,11 +60,10 @@ def serve(path, timeout=300, open_browser=False):
             if self.path != token_path or not self.valid_host():
                 self.respond(404, "Not found")
                 return
-            self.respond(200, '<!doctype html><html lang="ja"><meta charset="utf-8"><title>Cription Tunnel key</title>'
-                         '<h1>Cription Tunnel用キーをこのMacに保存</h1>'
-                         '<p>TunnelのRead・Use権限だけを持つランタイムキーを入力してください。外部には送信しません。</p>'
-                         '<form method="post"><label>Runtime key <input name="key" type="password" '
-                         'autocomplete="off" required></label><button type="submit">このMacに保存</button></form></html>')
+            self.respond(200, '<!doctype html><html lang="ja"><meta charset="utf-8"><title>Cription key setup</title>'
+                         '<h1>Cription用キーをこのMacに保存</h1><p>%s 外部には送信しません。</p>'
+                         '<form method="post"><label>%s <input name="key" type="password" '
+                         'autocomplete="off" required></label><button type="submit">このMacに保存</button></form></html>' % (purpose, label))
 
         def do_POST(self):
             nonlocal saved
@@ -74,7 +76,7 @@ def serve(path, timeout=300, open_browser=False):
                 if not 1 <= length <= 4096 or self.headers.get_content_type() != "application/x-www-form-urlencoded":
                     raise ValueError("Invalid form submission")
                 value = parse_qs(self.rfile.read(length).decode("utf-8"), strict_parsing=True).get("key", [""])[0]
-                save_key(destination, value)
+                save_key(destination, value, kind=kind)
             except (ValueError, OSError, UnicodeError):
                 self.respond(400, "保存できませんでした。キーの形式と保存先を確認してください。")
                 return

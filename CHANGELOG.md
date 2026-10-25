@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.0
+
+- Add per-client authenticated Streamable HTTP MCP for Notion Custom Agents and Manus, with tool allowlists, loopback-only key display and optional Cloudflare Quick Tunnel.
+- Add Notion page export CLI, local token setup, dry-run, Unicode-safe blocks and bounded write batches.
+- Disable arbitrary `save_to` writes over remote MCP; preserve existing stdio behavior.
+- Add HTTP security/protocol tests, official SDK smoke test and Japanese setup guide with account-side verification limits.
+
 ## v0.3.1 — 2026-10-24
 
 - Add Cursor MCP config/install commands using ~/.cursor/mcp.json, preserving unrelated settings with backups and idempotent installation.
