@@ -36,7 +36,7 @@ ExtensionはMCPとCriptionの利用ガイドをまとめたものです。公式
 gemini extensions install https://github.com/msandroid/cription-plugins --ref v0.5.0
 ```
 
-インストール時に表示されるMCP・コンテキストを確認します。`uvx` がPATH上に必要です。単体MCPとExtensionを同時に登録すると重複するため、どちらか一方を選んでください。単体設定から切り替える場合は `gemini mcp remove cription` でそのエントリだけを削除します。Extension削除は `gemini extensions uninstall cription` です。
+インストール時に表示されるMCP・コンテキストを確認します。`uvx` がPATH上に必要です。単体MCPとExtensionを同時に登録すると重複するため、どちらか一方を選んでください。単体設定から切り替える場合は `gemini mcp remove --scope user cription` でそのエントリだけを削除します。Extension削除は `gemini extensions uninstall cription` です。
 
 公式：[MCP](https://geminicli.com/docs/tools/mcp-server/)／[Extensions](https://geminicli.com/docs/extensions/)
 
