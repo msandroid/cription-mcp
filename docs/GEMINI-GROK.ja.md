@@ -115,7 +115,7 @@ APIキーとMCP接続キーは別です。片方をもう片方の入力欄に�
 
 ## 検証状況（2026-10-25）
 
-- Gemini CLI 0.65.0：単体MCPの `Connected` を確認。モデル試験では `gemini-3.5-flash` が503（高負荷）を返し、`gemini-3.8-flash` はタイムアウト。これはMCP接続成功とは別に扱っています。
+- Gemini CLI 0.65.0：単体MCPの `Connected` と、`gemini-3.1-flash-lite` での `speech_languages` 呼び出し・成功結果・モデル回答を確認。比較試験では `gemini-3.5-flash` が503（高負荷）を返し、`gemini-3.8-flash` はタイムアウト。これはMCP接続成功とは別に扱っています。
 - Gemini API：無料枠の既存キーと `gemini-3.5-flash` を使用し、公開HTTPS MCPの `speech_languages` 呼び出し・`function_result`・日本語対応の回答を確認。APIが返した `requires_action` ステータスはそのまま報告し、書き換えていません。`gemini-3.8-flash` はツールなしの対照試験でもタイムアウトしました。
 - Grok：専用プロファイルの公開HTTPSで公式MCP SDKによる認証・言語一覧取得に成功。Grokアプリの登録・会話はログイン時の規約同意待ち。xAI APIの実呼び出しも未検証です。
 - 共通MCP：合成ノートを使った8ツール・実音声認識が成功。
