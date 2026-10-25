@@ -1,4 +1,4 @@
-"""Authenticated loopback Streamable HTTP MCP for Notion and Manus."""
+"""Authenticated loopback Streamable HTTP MCP for cloud AI clients."""
 import argparse
 import contextlib
 import copy
@@ -19,14 +19,14 @@ import urllib.parse
 
 from . import server
 
-CLIENTS = ('notion', 'manus')
+CLIENTS = ('notion', 'manus', 'grok', 'gemini-api')
 MAX_BODY = 1024 * 1024
 DISPATCH_LOCK = threading.Lock()
 
 
 def profile_path(client):
     if client not in CLIENTS:
-        raise ValueError('Choose notion or manus')
+        raise ValueError('Choose a supported client: ' + ', '.join(CLIENTS))
     return Path.home() / '.config/cription-mcp' / ('remote-' + client + '.json')
 
 

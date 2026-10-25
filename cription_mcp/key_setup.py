@@ -10,7 +10,7 @@ from urllib.parse import parse_qs
 
 
 def save_key(path, value, kind="openai"):
-    prefixes = ("ntn_", "secret_") if kind == "notion" else ("sk-",)
+    prefixes = {"notion": ("ntn_", "secret_"), "gemini": ("AIza",), "grok": ("xai-",)}.get(kind, ("sk-",))
     if not isinstance(value, str) or not value.startswith(prefixes) or len(value) < 20 or any(c.isspace() for c in value):
         raise ValueError("Enter a valid %s API key, without whitespace" % kind)
     path = Path(path).expanduser().resolve()
@@ -33,8 +33,10 @@ def serve(path, timeout=300, open_browser=False, kind="openai"):
         raise ValueError("Key file already exists: %s" % destination)
     token_path = "/" + secrets.token_urlsafe(32)
     saved = False
-    label = "Notion API key" if kind == "notion" else "Runtime key"
-    purpose = "NotionでCription専用コネクションを作成し、そのAPIトークンを入力してください。" if kind == "notion" else "TunnelのRead・Use権限だけを持つランタイムキーを入力してください。"
+    label = {"notion": "Notion API key", "gemini": "Gemini API key", "grok": "xAI API key"}.get(kind, "Runtime key")
+    purpose = {"notion": "NotionでCription専用コネクションを作成し、そのAPIトークンを入力してください。",
+               "gemini": "Google AI StudioのAPIキーを入力してください。モデル呼び出し時はGoogleの利用枠・課金条件が適用されます。",
+               "grok": "xAI ConsoleのAPIキーを入力してください。モデル呼び出し時はxAIの利用枠・課金条件が適用されます。"}.get(kind, "TunnelのRead・Use権限だけを持つランタイムキーを入力してください。")
 
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *_args):

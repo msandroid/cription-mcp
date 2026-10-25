@@ -2,7 +2,7 @@
 
 On-device audio/video transcription and read-only access to your Cription notes, for **Claude, Codex, Antigravity, ChatGPT and other MCP clients**.
 
-**Current release: [v0.4.0](https://github.com/msandroid/cription-mcp/releases/tag/v0.4.0).** [日本語のインストール手順](docs/INSTALL.ja.md) · [Plugins and skills](https://github.com/msandroid/cription-plugins)
+**Current release: [v0.5.0](https://github.com/msandroid/cription-mcp/releases/tag/v0.5.0).** [日本語のインストール手順](docs/INSTALL.ja.md) · [Plugins and skills](https://github.com/msandroid/cription-plugins)
 
 Audio recognition runs on your Mac using Apple SpeechAnalyzer. Returned transcripts and notes are shared with your AI client and are subject to that service's data policies. The server has no Python runtime dependencies.
 
@@ -16,7 +16,7 @@ Audio recognition runs on your Mac using Apple SpeechAnalyzer. Returned transcri
 ## Install the server once
 
 ```bash
-uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.4.0 cription-mcp
+uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.5.0 cription-mcp
 uv tool update-shell
 ```
 
@@ -42,7 +42,7 @@ claude mcp get cription
 
 ### Claude Desktop
 
-Download **[cription-0.4.0.mcpb](https://github.com/msandroid/cription-mcp/releases/download/v0.4.0/cription-0.4.0.mcpb)** and open it in Claude Desktop. Python and the Command Line Tools are still required.
+Download **[cription-0.5.0.mcpb](https://github.com/msandroid/cription-mcp/releases/download/v0.5.0/cription-0.5.0.mcpb)** and open it in Claude Desktop. Python and the Command Line Tools are still required.
 
 Alternatively, after installing the server with uv:
 
@@ -62,7 +62,7 @@ codex mcp get cription
 Optional summary skills:
 
 ```bash
-codex plugin marketplace add msandroid/cription-plugins --ref v0.4.0
+codex plugin marketplace add msandroid/cription-plugins --ref v0.5.0
 codex plugin add cription@cription
 ```
 
@@ -89,7 +89,7 @@ For an on-demand Git install, use this entry instead. Replace `uvx` with the abs
   "mcpServers": {
     "cription": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/msandroid/cription-mcp@v0.4.0", "cription-mcp"]
+      "args": ["--from", "git+https://github.com/msandroid/cription-mcp@v0.5.0", "cription-mcp"]
     }
   }
 }
@@ -99,7 +99,7 @@ For an on-demand Git install, use this entry instead. Replace `uvx` with the abs
 
 For MCP only, run `cription-mcp-setup install cursor`. This adds absolute executable paths to `~/.cursor/mcp.json`, preserving other servers and backing up changes. Reload Cursor and check the Cription tools.
 
-For the native Cursor plugin (MCP + three skills), clone [cription-plugins v0.4.0](https://github.com/msandroid/cription-plugins/tree/v0.4.0) and run `python3 scripts/install_cursor.py`. It installs in Cursor's documented local plugin directory and resolves uvx to an absolute path. Use either the plugin or standalone MCP to avoid duplicate tools. See the [Japanese guide](docs/INSTALL.ja.md) for installation, update and removal.
+For the native Cursor plugin (MCP + three skills), clone [cription-plugins v0.5.0](https://github.com/msandroid/cription-plugins/tree/v0.5.0) and run `python3 scripts/install_cursor.py`. It installs in Cursor's documented local plugin directory and resolves uvx to an absolute path. Use either the plugin or standalone MCP to avoid duplicate tools. See the [Japanese guide](docs/INSTALL.ja.md) for installation, update and removal.
 
 ## ChatGPT: private Secure MCP Tunnel
 
@@ -118,6 +118,14 @@ Account login, Tunnel creation/workspace association, key issuance and ChatGPT r
 Try `speech_languages`, then transcription with an absolute path on your Mac. Browser attachments are not automatically local files. The earlier `key`, `init`, `doctor` and foreground `run` commands remain available.
 
 For long transcripts, call `read_transcript` with the returned `transcriptId` and `nextOffset` until `nextOffset` is null. ChatGPT can summarize the returned text using a normal prompt; the local plugin skill files are for Claude, Codex and Antigravity.
+
+## Gemini CLI, Grok and Gemini API
+
+Install Gemini CLI MCP with `cription-mcp-setup install gemini`. For the Gemini Extension, use the separate [plugin repository](https://github.com/msandroid/cription-plugins); choose either standalone MCP or the Extension to avoid duplicate tools.
+
+Grok and Gemini API use separate authenticated HTTPS profiles: `cription-mcp-remote init grok` / `init gemini-api`, then `serve CLIENT --tunnel`. Grok's web Custom Connector accepts the displayed MCP URL; authentication compatibility must be verified in your account. The `cription-cloud grok` / `cription-cloud gemini` CLI calls the provider API with that profile, an explicit model, prompt and tool allowlist. `--setup-key` receives an existing API key through a loopback-only password form; `--dry-run` prints a redacted request without contacting the provider.
+
+See the [Japanese guide](docs/GEMINI-GROK.ja.md) for exact commands, account requirements, privacy, verification status and Meta AI preview application limitations.
 
 ## Notion and Manus
 
@@ -153,7 +161,7 @@ A successful connection advertises **8 tools**. `speech_languages` may take long
 See [日本語ガイド](docs/INSTALL.ja.md#更新と削除) for all client paths and cleanup steps. To update the persistent install to this release:
 
 ```bash
-uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.4.0 cription-mcp
+uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.5.0 cription-mcp
 ```
 
 Restart your AI clients and Tunnel after upgrading. The setup command backs up JSON settings and preserves unrelated entries. To replace an existing Cription registration intentionally, use `install CLIENT --replace`.
@@ -168,11 +176,11 @@ SpeechAnalyzer locales differ from the Cription app's additional engines. New tr
 
 ```bash
 python3 -m unittest discover -s tests -v
-uv run --no-project --with mcp --python 3.12 python tests/smoke_mcp.py --audio /path/to/test.aiff
-uv run --no-project --with mcp --python 3.12 python tests/smoke_mcp.py --audio /path/to/test.aiff --tunnel-client /path/to/tunnel-client
-uv run --no-project --with mcp --python 3.12 python tests/smoke_remote.py --audio /path/to/test.aiff
+uv run --no-project --with 'mcp>=1.20,<2' --with httpx --python 3.12 python tests/smoke_mcp.py --audio /path/to/test.aiff
+uv run --no-project --with 'mcp>=1.20,<2' --with httpx --python 3.12 python tests/smoke_mcp.py --audio /path/to/test.aiff --tunnel-client /path/to/tunnel-client
+uv run --no-project --with 'mcp>=1.20,<2' --with httpx --python 3.12 python tests/smoke_remote.py --audio /path/to/test.aiff
 uv build
-npx -y @anthropic-ai/mcpb pack . dist/cription-0.4.0.mcpb
+npx -y @anthropic-ai/mcpb pack . dist/cription-0.5.0.mcpb
 ```
 
 Smoke tests use synthetic notes. The local Tunnel test does not by itself prove a live ChatGPT conversation. On the release-validation Mac, ChatGPT and Codex completed real tool calls; Claude and Antigravity completed connection/discovery checks, with their model calls limited by account quotas. Keep versions synchronized across `pyproject.toml`, `manifest.json` and `server.py`.

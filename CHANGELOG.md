@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- Add Gemini CLI settings installation with backups and preservation of unrelated configuration.
+- Add separate Grok and Gemini API authenticated remote MCP profiles.
+- Add `cription-cloud` for xAI Responses and Google Interactions Remote MCP, explicit models, restricted tools, redacted dry-run and private API key setup.
+- Add provider-schema, credential-boundary and settings regression tests, plus setup documentation.
+
 ## 0.4.0
 
 - Add per-client authenticated Streamable HTTP MCP for Notion Custom Agents and Manus, with tool allowlists, loopback-only key display and optional Cloudflare Quick Tunnel.

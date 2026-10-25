@@ -1,6 +1,6 @@
 """Official MCP SDK: HTTP bridge with synthetic notes and optional real audio.
 
-uv run --no-project --with mcp --python 3.12 python tests/smoke_remote.py --audio /path/test.aiff
+uv run --no-project --with 'mcp>=1.20,<2' --with httpx --python 3.12 python tests/smoke_remote.py --audio /path/test.aiff
 Use --client manus --url https://.../mcp for a configured restricted public connection.
 """
 import argparse

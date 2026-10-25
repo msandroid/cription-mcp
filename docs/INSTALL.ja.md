@@ -1,6 +1,6 @@
 # Cription連携：日本語インストールガイド
 
-MCPサーバー v0.4.0／プラグイン v0.4.0。音声認識はMac上で処理します。返された文字起こし・ノート本文は接続先のAIサービスに渡ります。
+MCPサーバー v0.5.0／プラグイン v0.5.0。音声認識はMac上で処理します。返された文字起こし・ノート本文は接続先のAIサービスに渡ります。
 
 ## 1. 必要なもの
 
@@ -18,7 +18,7 @@ xcode-select --install
 ## 2. サーバーをインストール
 
 ```bash
-uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.4.0 cription-mcp
+uv tool install --from git+https://github.com/msandroid/cription-mcp@v0.5.0 cription-mcp
 uv tool update-shell
 ```
 
@@ -48,7 +48,7 @@ claude mcp get cription
 
 ### Claude Desktop
 
-[cription-0.4.0.mcpbをダウンロード](https://github.com/msandroid/cription-mcp/releases/download/v0.4.0/cription-0.4.0.mcpb)してClaude Desktopで開くか、手順2のインストール後に実行します。
+[cription-0.5.0.mcpbをダウンロード](https://github.com/msandroid/cription-mcp/releases/download/v0.5.0/cription-0.5.0.mcpb)してClaude Desktopで開くか、手順2のインストール後に実行します。
 
 ```bash
 cription-mcp-setup install claude-desktop
@@ -66,7 +66,7 @@ codex mcp get cription
 議事録などのスキルも使う場合は追加します。
 
 ```bash
-codex plugin marketplace add msandroid/cription-plugins --ref v0.4.0
+codex plugin marketplace add msandroid/cription-plugins --ref v0.5.0
 codex plugin add cription@cription
 ```
 
@@ -91,7 +91,7 @@ Antigravityを再起動し、**Customizations → Installed → MCP Servers → 
 ### プラグイン：MCP + 3スキル
 
 ```bash
-git clone --branch v0.4.0 --depth 1 https://github.com/msandroid/cription-plugins.git
+git clone --branch v0.5.0 --depth 1 https://github.com/msandroid/cription-plugins.git
 cd cription-plugins
 python3 scripts/install_cursor.py
 ```
@@ -209,10 +209,10 @@ cription-local ollama --model qwen3:0.6b --tools transcribe_audio read_transcrip
 
 ## 更新と削除
 
-v0.4.0へ更新する場合：
+v0.5.0へ更新する場合：
 
 ```bash
-uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.4.0 cription-mcp
+uv tool install --force --from git+https://github.com/msandroid/cription-mcp@v0.5.0 cription-mcp
 ```
 
 AIクライアントとTunnelを再起動してください。実行パスが変わった場合は、既存設定を確認して`install CLIENT --replace`で更新します。
